@@ -1,0 +1,149 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  /* FUNDO AZUL ESCURO MAIS SUAVE */
+  background: linear-gradient(135deg, #0f172a, #1e3a8a);
+
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #e5eef7;
+  padding: 20px;
+}
+
+/* CONTAINER (igual ao estilo bonito de antes) */
+.login-container {
+  width: 100%;
+  max-width: 380px;
+
+  background: rgba(255, 255, 255, 0.08); /* leve transparência */
+  padding: 32px;
+  border-radius: 16px;
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  text-align: center;
+}
+
+/* TÍTULO */
+.login-container h1 {
+  font-size: 28px;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.login-container h1 span {
+  color: #38bdf8;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #94a3b8;
+  margin-bottom: 24px;
+}
+
+/* ERRO */
+.erro-msg {
+  color: #ff6b6b;
+  font-size: 13px;
+  margin-bottom: 15px;
+  display: none;
+}
+
+/* CAMPOS */
+.field {
+  text-align: left;
+  margin-bottom: 18px;
+}
+
+label {
+  font-size: 13px;
+  color: #cbd5f5;
+  margin-bottom: 6px;
+  display: block;
+}
+
+input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.06);
+
+  color: #e5eef7;
+}
+
+input:focus {
+  outline: none;
+  border: 1px solid #38bdf8;
+  background: rgba(255,255,255,0.08);
+}
+
+/* ESQUECEU SENHA */
+.extra-options {
+  margin-top: 12px;
+  text-align: center;
+}
+
+.extra-options .link {
+  font-size: 13px;
+  color: #38bdf8;
+  text-decoration: none;
+}
+
+.extra-options .link:hover {
+  text-decoration: underline;
+}
+
+/* BOTÃO */
+.btn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: linear-gradient(90deg, #38bdf8, #60a5fa);
+  color: #0f172a;
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+}
+
+/* CADASTRO */
+.register {
+  margin-top: 20px;
+  font-size: 14px;
+  color: #94a3b8;
+}
+
+.register .link {
+  color: #38bdf8;
+  text-decoration: none;
+}
+
+.register .link:hover {
+  text-decoration: underline;
+}
+
+/* RESPONSIVO */
+@media (max-width: 480px) {
+  .login-container {
+    padding: 24px;
+  }
+}
+

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Criar Cadastro - PropostaFácil</title>
+
+  <!-- CSS correto -->
+  <link rel="stylesheet" href="../CSS/register.css">
+
+  <!-- Fonte -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+  <div class="register-container">
+    <h1>PropostaFácil</h1>
+    <p class="subtitle">Crie sua conta</p>
+
+    <form id="registerForm">
+
+      <div class="field">
+        <label for="regName">Nome do usuário</label>
+        <input id="regName" type="text" placeholder="Seu nome" required>
+      </div>
+
+      <div class="field">
+        <label for="regEmail">Email</label>
+        <input id="regEmail" type="email" placeholder="seuemail@gmail.com" required>
+      </div>
+
+      <div class="field">
+        <label for="regDate">Data de nascimento</label>
+        <input id="regDate" type="date" required>
+      </div>
+
+      <div class="field">
+        <label for="regPass">Criar senha</label>
+        <input id="regPass" type="password" placeholder="Digite uma senha" required>
+      </div>
+
+      <div class="field">
+        <label for="regConfirmPass">Confirme sua senha</label>
+        <input id="regConfirmPass" type="password" placeholder="Repita a senha" required>
+      </div>
+
+      <button class="btn btn-primary" type="submit">Cadastrar</button>
+    </form>
+
+    <!-- VOLTAR -->
+    <div class="back-login">
+      <a href="login.html" class="link">← Voltar para Login</a>
+    </div>
+
+  </div>
+
+  <script>
+    const registerForm = document.getElementById("registerForm");
+
+    registerForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById("regName").value.trim();
+      const email = document.getElementById("regEmail").value.trim().toLowerCase();
+      const date = document.getElementById("regDate").value;
+      const pass = document.getElementById("regPass").value.trim();
+      const confirmPass = document.getElementById("regConfirmPass").value.trim();
+
+      if (!name || !email || !date || !pass || !confirmPass) {
+        alert("Preencha todos os campos!");
+        return;
+      }
+
+      if (pass !== confirmPass) {
+        alert("As senhas não coincidem!");
+        return;
+      }
+
+      const users = JSON.parse(localStorage.getItem("users") || "[]");
+
+      if (users.some(u => u.email === email)) {
+        alert("Esse email já está cadastrado!");
+        return;
+      }
+
+      users.push({ name, email, date, password: pass });
+      localStorage.setItem("users", JSON.stringify(users));
+
+      alert("Cadastro criado com sucesso!");
+      window.location.href = "login.html";
+    });
+  </script>
+
+</body>
+</html>
