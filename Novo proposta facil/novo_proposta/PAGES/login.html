@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - PropostaFácil</title>
+
+  <!-- Fonte -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="CSS/login.css">
+</head>
+
+<body>
+
+  <div class="login-container">
+
+    <h1>Proposta<span>Fácil</span></h1>
+    <p class="subtitle">Acesse sua conta para continuar</p>
+
+    <!-- Mensagem de erro (começa escondida) -->
+    <p id="erro" class="erro-msg" style="display: none;">
+      Email ou senha incorretos!
+    </p>
+
+    <form id="loginForm">
+
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" type="email" required>
+      </div>
+
+      <div class="field">
+        <label for="password">Senha</label>
+        <input id="password" type="password" required>
+      </div>
+
+      <button class="btn btn-primary" type="submit">Entrar</button>
+
+    </form>
+
+    <div class="extra-options">
+      <a href="#" class="link">Esqueceu a senha?</a>
+    </div>
+
+    <div class="register">
+      <p>Não tem uma conta?
+        <a href="register.html" class="link">Cadastrar</a>
+      </p>
+    </div>
+
+  </div>
+
+  <script>
+    const usuarioCorreto = "joaoguilhermme3@gmail.com";
+    const senhaCorreta = "78952";
+
+    const form = document.getElementById("loginForm");
+    const erroMsg = document.getElementById("erro");
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const email = document.getElementById("email").value.trim().toLowerCase();
+      const senha = document.getElementById("password").value;
+
+      if (email === usuarioCorreto && senha === senhaCorreta) {
+        localStorage.setItem("proposta_session", "true");
+        window.location.href = "index.html";
+      } else {
+        erroMsg.style.display = "block";
+      }
+    });
+  </script>
+
+</body>
+</html>
