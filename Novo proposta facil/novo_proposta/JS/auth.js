@@ -8,5 +8,5 @@ export function ensureAuthenticated() {
 
 export function logout() {
   localStorage.removeItem(SESSION_KEY);
-  window.location.href = "../login.html";
+  window.location.href = "login.html";
 }

@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recuperar Senha - PropostaFácil</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../CSS/passawold.css">
+
+</head>
+
+<body>
+  <div class="login-container" style="max-width:400px;">
+
+    <!-- BARRA DE PROGRESSO -->
+    <div class="progress-bar">
+      <div class="progress-dot ativo" id="dot1"></div>
+      <div class="progress-dot"       id="dot2"></div>
+      <div class="progress-dot"       id="dot3"></div>
+    </div>
+
+    <!-- ======= PASSO 1 — INFORMAR EMAIL ======= -->
+    <div class="step ativo" id="step1">
+      <h1 style="font-size:24px; margin-bottom:8px;">Proposta<span style="color:#38bdf8;">Fácil</span></h1>
+      <p class="subtitle">Digite seu email para recuperar o acesso</p>
+
+      <div id="msg1" class="msg erro"></div>
+
+      <div class="field">
+        <label for="email">Email cadastrado</label>
+        <input id="email" type="email" placeholder="seuemail@gmail.com" required>
+      </div>
+
+      <button class="btn btn-primary" onclick="verificarEmail()">Enviar código</button>
+
+      <div class="register" style="margin-top:18px;">
+        <a href="login.html" class="link">← Voltar para Login</a>
+      </div>
+    </div>
+
+    <!-- ======= PASSO 2 — CÓDIGO DE VERIFICAÇÃO ======= -->
+    <div class="step" id="step2">
+      <h1 style="font-size:22px; margin-bottom:8px;">Proposta<span style="color:#38bdf8;">Fácil</span></h1>
+      <p class="subtitle">Digite o código de 4 dígitos enviado para <strong id="emailDestino" style="color:#38bdf8;"></strong></p>
+
+      <div id="msg2" class="msg erro"></div>
+
+      <div class="codigo-inputs">
+        <input class="cod" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]">
+        <input class="cod" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]">
+        <input class="cod" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]">
+        <input class="cod" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]">
+      </div>
+
+      <p class="hint">Não recebeu? <button class="reenviar-btn" id="btnReenviar" onclick="reenviarCodigo()">Reenviar</button> <span class="timer" id="timerTxt"></span></p>
+
+      <button class="btn btn-primary" style="margin-top:16px;" onclick="verificarCodigo()">Verificar código</button>
+
+      <div class="register" style="margin-top:14px;">
+        <a href="#" class="link" onclick="voltarStep(1)">← Voltar</a>
+      </div>
+    </div>
+
+    <!-- ======= PASSO 3 — NOVA SENHA ======= -->
+    <div class="step" id="step3">
+      <h1 style="font-size:22px; margin-bottom:8px;">Proposta<span style="color:#38bdf8;">Fácil</span></h1>
+      <p class="subtitle">Crie uma nova senha segura</p>
+
+      <div id="msg3" class="msg erro"></div>
+
+      <div class="field">
+        <label>Nova senha</label>
+        <div class="senha-wrapper">
+          <input id="novaSenha" type="password" placeholder="Mínimo 6 caracteres" oninput="calcularForca(this.value)">
+          <button class="toggle-senha" type="button" onclick="toggleSenha('novaSenha', this)">👁</button>
+        </div>
+        <div class="forca-bar"><div class="forca-fill" id="forcaFill"></div></div>
+        <div class="forca-label" id="forcaLabel" style="color:#64748b;"></div>
+      </div>
+
+      <div class="field">
+        <label>Confirmar nova senha</label>
+        <div class="senha-wrapper">
+          <input id="confirmarSenha" type="password" placeholder="Repita a senha">
+          <button class="toggle-senha" type="button" onclick="toggleSenha('confirmarSenha', this)">👁</button>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" onclick="salvarNovaSenha()">Salvar nova senha</button>
+    </div>
+
+    <!-- ======= PASSO 4 — SUCESSO ======= -->
+    <div class="step" id="step4" style="text-align:center; padding:10px 0;">
+      <div class="sucesso-icon">✅</div>
+      <h2 style="font-size:20px; margin-bottom:8px;">Senha atualizada!</h2>
+      <p class="subtitle">Sua senha foi redefinida com sucesso. Agora você já pode fazer login.</p>
+      <a href="login.html" class="btn btn-primary" style="display:block; margin-top:20px; text-decoration:none; text-align:center;">
+        Ir para o Login
+      </a>
+    </div>
+
+  </div>
+
+  <script>
+    // ─── Estado ───────────────────────────────────────────────────────────────
+    let codigoGerado = "";
+    let emailUsuario = "";
+    let timerInterval = null;
+
+    // ─── Navegação entre steps ────────────────────────────────────────────────
+    function irParaStep(n) {
+      document.querySelectorAll('.step').forEach((el, i) => {
+        el.classList.toggle('ativo', i + 1 === n);
+      });
+      document.querySelectorAll('.progress-dot').forEach((dot, i) => {
+        dot.classList.toggle('ativo', i + 1 <= n);
+      });
+    }
+
+    function voltarStep(n) {
+      irParaStep(n);
+    }
+
+    function mostrarMsg(id, texto, tipo = 'erro') {
+      const el = document.getElementById(id);
+      el.textContent = texto;
+      el.className = `msg ${tipo}`;
+      el.style.display = 'block';
+    }
+
+    function esconderMsg(id) {
+      document.getElementById(id).style.display = 'none';
+    }
+
+    // ─── PASSO 1: verificar email ─────────────────────────────────────────────
+    function verificarEmail() {
+      const email = document.getElementById('email').value.trim().toLowerCase();
+      esconderMsg('msg1');
+
+      if (!email || !email.includes('@')) {
+        mostrarMsg('msg1', 'Digite um email válido.');
+        return;
+      }
+
+      // Verifica se o email existe no localStorage
+      const users = JSON.parse(localStorage.getItem('users') || '[]');
+      const existe = users.some(u => u.email === email);
+
+      if (!existe) {
+        mostrarMsg('msg1', 'Email não encontrado. Verifique ou cadastre-se.');
+        return;
+      }
+
+      emailUsuario = email;
+      codigoGerado = gerarCodigo();
+
+      // Simula envio (em produção, seria via back-end/PHP)
+      console.log(`[DEV] Código gerado para ${email}: ${codigoGerado}`);
+      alert(`[Simulação] Código enviado: ${codigoGerado}\n\n(Em produção, chegaria no seu email)`);
+
+      document.getElementById('emailDestino').textContent = email;
+      iniciarTimer();
+      irParaStep(2);
+
+      // Foco no primeiro input do código
+      setTimeout(() => document.querySelectorAll('.cod')[0].focus(), 100);
+    }
+
+    // ─── PASSO 2: código de verificação ──────────────────────────────────────
+    function gerarCodigo() {
+      return String(Math.floor(1000 + Math.random() * 9000));
+    }
+
+    // Navegação automática entre os inputs do código
+    document.querySelectorAll('.cod').forEach((input, i, all) => {
+      input.addEventListener('input', () => {
+        const val = input.value.replace(/\D/g, '');
+        input.value = val;
+        if (val) {
+          input.classList.add('preenchido');
+          if (i < all.length - 1) all[i + 1].focus();
+        } else {
+          input.classList.remove('preenchido');
+        }
+      });
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Backspace' && !input.value && i > 0) {
+          all[i - 1].focus();
+        }
+      });
+    });
+
+    function verificarCodigo() {
+      const inputs = document.querySelectorAll('.cod');
+      const digitado = Array.from(inputs).map(i => i.value).join('');
+      esconderMsg('msg2');
+
+      if (digitado.length < 4) {
+        mostrarMsg('msg2', 'Digite os 4 dígitos do código.');
+        return;
+      }
+
+      if (digitado !== codigoGerado) {
+        mostrarMsg('msg2', 'Código incorreto. Tente novamente.');
+        inputs.forEach(i => { i.value = ''; i.classList.remove('preenchido'); });
+        inputs[0].focus();
+        return;
+      }
+
+      clearInterval(timerInterval);
+      irParaStep(3);
+      document.getElementById('novaSenha').focus();
+    }
+
+    function reenviarCodigo() {
+      codigoGerado = gerarCodigo();
+      console.log(`[DEV] Novo código para ${emailUsuario}: ${codigoGerado}`);
+      alert(`[Simulação] Novo código: ${codigoGerado}`);
+      iniciarTimer();
+    }
+
+    function iniciarTimer() {
+      let segundos = 60;
+      const btnReenviar = document.getElementById('btnReenviar');
+      const timerTxt    = document.getElementById('timerTxt');
+
+      btnReenviar.disabled = true;
+      clearInterval(timerInterval);
+
+      timerInterval = setInterval(() => {
+        segundos--;
+        timerTxt.innerHTML = `(aguarde <span>${segundos}s</span>)`;
+        if (segundos <= 0) {
+          clearInterval(timerInterval);
+          btnReenviar.disabled = false;
+          timerTxt.textContent = '';
+        }
+      }, 1000);
+    }
+
+    // ─── PASSO 3: nova senha ──────────────────────────────────────────────────
+    function calcularForca(senha) {
+      const fill  = document.getElementById('forcaFill');
+      const label = document.getElementById('forcaLabel');
+
+      let pontos = 0;
+      if (senha.length >= 6)  pontos++;
+      if (senha.length >= 10) pontos++;
+      if (/[A-Z]/.test(senha)) pontos++;
+      if (/[0-9]/.test(senha)) pontos++;
+      if (/[^A-Za-z0-9]/.test(senha)) pontos++;
+
+      const niveis = [
+        { pct: '0%',   cor: 'transparent', txt: '' },
+        { pct: '25%',  cor: '#f87171',     txt: 'Muito fraca' },
+        { pct: '50%',  cor: '#fbbf24',     txt: 'Fraca' },
+        { pct: '70%',  cor: '#facc15',     txt: 'Média' },
+        { pct: '85%',  cor: '#34d399',     txt: 'Forte' },
+        { pct: '100%', cor: '#22d3ee',     txt: 'Muito forte' },
+      ];
+
+      const n = niveis[Math.min(pontos, 5)];
+      fill.style.width      = n.pct;
+      fill.style.background = n.cor;
+      label.style.color     = n.cor;
+      label.textContent     = n.txt;
+    }
+
+    function toggleSenha(id, btn) {
+      const input = document.getElementById(id);
+      const visivel = input.type === 'text';
+      input.type = visivel ? 'password' : 'text';
+      btn.textContent = visivel ? '👁' : '🙈';
+    }
+
+    function salvarNovaSenha() {
+      const nova      = document.getElementById('novaSenha').value;
+      const confirmar = document.getElementById('confirmarSenha').value;
+      esconderMsg('msg3');
+
+      if (nova.length < 6) {
+        mostrarMsg('msg3', 'A senha deve ter no mínimo 6 caracteres.');
+        return;
+      }
+
+      if (nova !== confirmar) {
+        mostrarMsg('msg3', 'As senhas não coincidem.');
+        return;
+      }
+
+      // Atualiza no localStorage
+      const users = JSON.parse(localStorage.getItem('users') || '[]');
+      const atualizados = users.map(u =>
+        u.email === emailUsuario ? { ...u, password: nova } : u
+      );
+      localStorage.setItem('users', JSON.stringify(atualizados));
+
+      irParaStep(4);
+    }
+  </script>
+</body>
+</html>
