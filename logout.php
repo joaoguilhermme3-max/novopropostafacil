@@ -1,0 +1,18 @@
+<?php
+// PAGES/logout.php — Encerra a sessão e redireciona para o login
+session_start();
+session_unset();
+session_destroy();
+
+// Apaga o cookie de sessão
+if (ini_get("session.use_cookies")) {
+    $params = session_get_cookie_params();
+    setcookie(
+        session_name(), '', time() - 42000,
+        $params["path"], $params["domain"],
+        $params["secure"], $params["httponly"]
+    );
+}
+
+header('Location: login.php');
+exit;
